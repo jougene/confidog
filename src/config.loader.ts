@@ -1,12 +1,10 @@
-export interface IProvider {
-    get(key: string): string | Promise<string>;
-}
+import { Provider } from './providers/provider.interface';
 
 type KeyValue = { key: string; value: string };
-type GrabberFn = (providers: IProvider[]) => KeyValue;
+type GrabberFn = (providers: Provider[]) => KeyValue;
 
 export class ConfigLoader {
-    constructor(private readonly providers: IProvider[]) {}
+    constructor(private readonly providers: Provider[]) {}
 
     async load(config: any) {
         await Promise.all([this.fillInFlatten(config), this.fillInNested(config)]);
@@ -20,7 +18,7 @@ export class ConfigLoader {
         const kvs1: KeyValue[] = await Promise.all(
             flattenGrabbers.map(g => {
                 return g(this.providers);
-            })
+            }),
         );
 
         for (let { key, value } of kvs1) {
@@ -41,25 +39,5 @@ export class ConfigLoader {
                 config[nestedKey][key] = value;
             }
         }
-    }
-}
-
-export class EnvConfigProvider implements IProvider {
-    constructor() {}
-
-    get(key: string) {
-        return process.env[key];
-    }
-}
-
-export class VaultConfigProvider implements IProvider {
-    constructor(private readonly options) {}
-
-    async get(key: string) {
-        await new Promise(resolve => setTimeout(resolve, 50));
-
-        // api call to vault
-
-        return `${key}_VAULT_SECRET_VALUE`;
     }
 }
