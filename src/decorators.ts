@@ -11,12 +11,11 @@ export function EnvConfig(options: Options) {
         const existedGrabbers = Reflect.getMetadata('grabbers', target) || [];
 
         const grabFn = async (providers: ProvidersMap) => {
-            // it is ridiculous, but user can register more than one provider with same name
-            const provider = providers.get('env');
+            const provider = providers['env'];
 
             const value = (await provider.get(options.key)) || options.default;
 
-            return { key, value };
+            return { provider: 'env', key, value };
         };
 
         existedGrabbers.push(grabFn);
@@ -30,11 +29,11 @@ export function VaultConfig(options: Options) {
         const existedGrabbers = Reflect.getMetadata('grabbers', target) || [];
 
         const grabFn = async (providers: ProvidersMap) => {
-            const provider = providers.get('vault');
+            const provider = providers['vault'];
 
             const value = (await provider.get(options.key)) || options.default;
 
-            return { key, value };
+            return { provider: 'vault', key, value };
         };
 
         existedGrabbers.push(grabFn);

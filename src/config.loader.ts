@@ -1,38 +1,56 @@
 import { Provider } from './providers/provider.interface';
 
-export type ProvidersMap = Map<string, Provider>;
+export type ProvidersMap = { [key: string]: Provider };
 
-type KeyValue = { key: string; value: string };
-type GrabberFn = (providers: ProvidersMap) => KeyValue;
+type Values = { provider: string; key: string; value: string };
+type GrabberFn = (providers: ProvidersMap) => Values;
+
+type Options = {
+    config: any;
+    providers: ProvidersMap;
+    options?: {
+        remoteConfigFetchTimeout?: number;
+        override?: boolean;
+    };
+};
 
 export class ConfigLoader {
-    constructor(private readonly providers: ProvidersMap) {}
+    static async load(options: Options) {
+        await Promise.all([ConfigLoader.fillInFlatten(options), ConfigLoader.fillInNested(options)]);
 
-    async load(config: any) {
-        await Promise.all([this.fillInFlatten(config), this.fillInNested(config)]);
-
-        return config;
+        return options.config; // mutate (foooo) - refactor this
     }
 
-    private async fillInFlatten(config: any) {
-        const flattenGrabbers = Reflect.getMetadata('grabbers', config) || [];
+    private static async fillInFlatten(options: Options) {
+        const { config, providers } = options;
+        const flattenGrabbers: GrabberFn[] = Reflect.getMetadata('grabbers', config) || [];
 
-        const kvs1: KeyValue[] = await Promise.all(
+        const values: Values[] = await Promise.all(
             flattenGrabbers.map(g => {
-                return g(this.providers);
+                return g(providers);
             }),
         );
 
-        for (let { key, value } of kvs1) {
+        for (let { key, value } of values) {
             config[key] = value;
         }
     }
 
-    private async fillInNested(config: any) {
+    private static async fillInNested(options: Options) {
+        const { config, providers } = options;
         const nestedKeys = Reflect.getMetadata('nestedKeys', config) || [];
         for (let nestedKey of nestedKeys) {
             const grabbers: GrabberFn[] = Reflect.getMetadata('grabbers', config, nestedKey) || [];
-            const keyValues: KeyValue[] = await Promise.all(grabbers.map(g => g(this.providers)));
+            const keyValues: Values[] = await Promise.all(grabbers.map(g => g(providers)));
+
+            const providerKeys = Object.keys(providers);
+
+            keyValues.sort((a, b) => {
+                const providerNameA = a.provider;
+                const providerNameB = b.provider;
+
+                return providerKeys.indexOf(providerNameA) - providerKeys.indexOf(providerNameB);
+            });
 
             const ctor = Reflect.getMetadata('design:type', config, nestedKey);
             config[nestedKey] = new ctor();

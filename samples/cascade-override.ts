@@ -1,10 +1,10 @@
 import { EnvConfig, VaultConfig, NestedConfig } from '../src/decorators';
-import { EnvConfigProvider, VaultStubConfigProvider as VaultConfigProvider, Provider } from '../src/providers';
+import { EnvConfigProvider, VaultStubConfigProvider as VaultConfigProvider } from '../src/providers';
 import { ConfigLoader } from '../src/config.loader';
 
 class CryptoConfig {
-    @EnvConfig({ key: 'CRYPTO_KEY', default: 'unknown_crypto_key' })
-    @VaultConfig({ key: 'crypto_key', default: 'unknown_crypto_key' })
+    @EnvConfig({ key: 'CRYPTO_KEY', default: 'default_crypto_key' })
+    @VaultConfig({ key: 'crypto_key', default: 'default_crypto_key' })
     cryptoKey: string;
 }
 
@@ -13,11 +13,12 @@ class Config {
     crypto: CryptoConfig;
 }
 
-const providers = new Map<string, Provider>();
-providers.set('env', new EnvConfigProvider());
-providers.set('vault', new VaultConfigProvider({ path: 'localhost', secret: 'vault_secret' }));
+const config = ConfigLoader.load({
+    config: new Config(),
+    providers: {
+        env: new EnvConfigProvider(),
+        vault: new VaultConfigProvider({ path: 'localhost', secret: 'vault_secret' }),
+    },
+});
 
-//const providers = [new EnvConfigProvider(), new VaultConfigProvider({ path: 'localhost', secret: 'vault_secret' })];
-const loader = new ConfigLoader(providers);
-loader.load(new Config()).then(console.log);
-
+config.then(console.log);

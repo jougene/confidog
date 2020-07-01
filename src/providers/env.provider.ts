@@ -1,4 +1,4 @@
-import { Provider } from '.'
+import { Provider } from '.';
 
 export class EnvConfigProvider implements Provider {
     constructor() {}
@@ -7,4 +7,3 @@ export class EnvConfigProvider implements Provider {
         return process.env[key];
     }
 }
-

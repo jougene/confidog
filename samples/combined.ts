@@ -38,7 +38,13 @@ class Config {
     logLevel: string;
 }
 
-const providers = [new EnvConfigProvider(), new VaultConfigProvider({ path: 'localhost', secret: 'vault_secret' })];
-const loader = new ConfigLoader(providers);
-loader.load(new Config()).then(console.log);
+const config = ConfigLoader.load({
+    config: new Config(),
+    providers: {
+        env: new EnvConfigProvider(),
+        vault: new VaultConfigProvider({ path: 'localhost', secret: 'vault_secret' }),
+    },
+});
+
+config.then(console.log);
 

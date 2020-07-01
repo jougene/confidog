@@ -10,6 +10,9 @@ class Config {
     logLevel: string;
 }
 
-const providers = [new EnvConfigProvider()];
-const loader = new ConfigLoader(providers);
-loader.load(new Config()).then(console.log);
+const config = ConfigLoader.load({
+    config: new Config(),
+    providers: { env: new EnvConfigProvider() },
+});
+
+config.then(console.log);
