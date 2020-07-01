@@ -1,10 +1,12 @@
 import { Provider } from './providers/provider.interface';
 
+export type ProvidersMap = Map<string, Provider>;
+
 type KeyValue = { key: string; value: string };
-type GrabberFn = (providers: Provider[]) => KeyValue;
+type GrabberFn = (providers: ProvidersMap) => KeyValue;
 
 export class ConfigLoader {
-    constructor(private readonly providers: Provider[]) {}
+    constructor(private readonly providers: ProvidersMap) {}
 
     async load(config: any) {
         await Promise.all([this.fillInFlatten(config), this.fillInNested(config)]);
@@ -27,7 +29,7 @@ export class ConfigLoader {
     }
 
     private async fillInNested(config: any) {
-        const nestedKeys = Reflect.getMetadata('nestedKeys', config);
+        const nestedKeys = Reflect.getMetadata('nestedKeys', config) || [];
         for (let nestedKey of nestedKeys) {
             const grabbers: GrabberFn[] = Reflect.getMetadata('grabbers', config, nestedKey) || [];
             const keyValues: KeyValue[] = await Promise.all(grabbers.map(g => g(this.providers)));

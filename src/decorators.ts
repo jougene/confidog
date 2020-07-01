@@ -1,20 +1,18 @@
 import 'reflect-metadata';
-import { Provider, EnvConfigProvider, VaultConfigProvider } from './providers';
+import { ProvidersMap } from './config.loader';
 
 type Options = {
     key: string;
-    default: string;
+    default: string | number;
 };
 
 export function EnvConfig(options: Options) {
     return function(target: any, key: string) {
         const existedGrabbers = Reflect.getMetadata('grabbers', target) || [];
 
-        const grabFn = async (providers: Provider[]) => {
+        const grabFn = async (providers: ProvidersMap) => {
             // it is ridiculous, but user can register more than one provider with same name
-            const envProviders = providers.filter(p => p.constructor.name === EnvConfigProvider.name);
-
-            const provider = envProviders[0];
+            const provider = providers.get('env');
 
             const value = (await provider.get(options.key)) || options.default;
 
@@ -31,11 +29,8 @@ export function VaultConfig(options: Options) {
     return function(target: any, key: string) {
         const existedGrabbers = Reflect.getMetadata('grabbers', target) || [];
 
-        const grabFn = async (providers: Provider[]) => {
-            // it is ridiculous, but user can register more than one provider with same name
-            const vaultProviders = providers.filter(p => p.constructor.name === VaultConfigProvider.name);
-
-            const provider = vaultProviders[0];
+        const grabFn = async (providers: ProvidersMap) => {
+            const provider = providers.get('vault');
 
             const value = (await provider.get(options.key)) || options.default;
 
