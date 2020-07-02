@@ -18,7 +18,7 @@ export class ConfigLoader {
     static async load(options: Options) {
         await Promise.all([ConfigLoader.fillInFlatten(options), ConfigLoader.fillInNested(options)]);
 
-        return options.config; // mutate (foooo) - refactor this
+        return options.config; // CAREFUL - it mutates inner property of parameter
     }
 
     private static async fillInFlatten(options: Options) {
@@ -39,25 +39,35 @@ export class ConfigLoader {
     private static async fillInNested(options: Options) {
         const { config, providers } = options;
         const nestedKeys = Reflect.getMetadata('nestedKeys', config) || [];
-        for (let nestedKey of nestedKeys) {
-            const grabbers: GrabberFn[] = Reflect.getMetadata('grabbers', config, nestedKey) || [];
-            const keyValues: Values[] = await Promise.all(grabbers.map(g => g(providers)));
 
-            const providerKeys = Object.keys(providers);
+        const traverseAndFill = async (config1: any, nestedKeys1: string[]) => {
+            if (!config1) return;
+            for (let nestedKey of nestedKeys1) {
+                const ctor = Reflect.getMetadata('design:type', config1, nestedKey);
+                config1[nestedKey] = new ctor();
 
-            keyValues.sort((a, b) => {
-                const providerNameA = a.provider;
-                const providerNameB = b.provider;
+                const oneMoreNested = Reflect.getMetadata('nestedKeys', config1[nestedKey]);
+                const grabbers: GrabberFn[] = Reflect.getMetadata('grabbers', config1, nestedKey) || [];
+                const keyValues: Values[] = await Promise.all(grabbers.map(g => g(providers)));
 
-                return providerKeys.indexOf(providerNameA) - providerKeys.indexOf(providerNameB);
-            });
+                const providerKeys = Object.keys(providers);
 
-            const ctor = Reflect.getMetadata('design:type', config, nestedKey);
-            config[nestedKey] = new ctor();
+                keyValues.sort((a, b) => {
+                    const providerNameA = a.provider;
+                    const providerNameB = b.provider;
 
-            for (let { key, value } of keyValues) {
-                config[nestedKey][key] = value;
+                    return providerKeys.indexOf(providerNameA) - providerKeys.indexOf(providerNameB);
+                });
+                for (let { key, value } of keyValues) {
+                    config1[nestedKey][key] = value;
+                }
+
+                if (oneMoreNested && oneMoreNested.length > 0) {
+                    await traverseAndFill(config1[nestedKey], oneMoreNested);
+                }
             }
-        }
+        };
+
+        await traverseAndFill(config, nestedKeys);
     }
 }
