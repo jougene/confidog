@@ -8,5 +8,7 @@ script:
 
 deploy:
   provider: npm
-  email: 'djorka91@mail.ru'
-  api_key: 'YOUR_AUTH_TOKEN'
+  email: "$NPM_EMAIL"
+  api_key: "$NPM_AUTH_TOKEN"
+  on:
+    tags: true
