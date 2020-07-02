@@ -1,5 +1,5 @@
 {
-  "name": "config",
+  "name": "@jougene/confetti",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
@@ -16,7 +16,7 @@
     "ts-node": "^8.10.2",
     "typescript": "^3.9.5"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["config", "typescript"],
+  "author": "Eugene Sinitsyn",
   "license": "ISC"
 }

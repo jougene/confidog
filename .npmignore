@@ -1,0 +1,7 @@
+/src/
+.travis.yml
+.editorconfig
+.prettierrc
+.idea
+tsconfig.json
+/test/
