@@ -3,5 +3,13 @@
     "trailingComma": "all",
     "tabWidth": 4,
     "printWidth": 140,
-    "arrowParens": "avoid"
+    "arrowParens": "avoid",
+    "overrides": [
+        {
+            "files": "*.yml",
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
 }

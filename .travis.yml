@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - 'stable'
+
+script:
+  #- make lint
+  - npm test
+
+deploy:
+  provider: npm
+  email: 'djorka91@mail.ru'
+  api_key: 'YOUR_AUTH_TOKEN'
