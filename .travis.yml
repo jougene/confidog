@@ -3,7 +3,8 @@ node_js:
   - "stable"
 
 script:
-  #- make lint
+  - npm run lint
+  - npm run build
   - npm test
 
 deploy:

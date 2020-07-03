@@ -31,7 +31,7 @@ export class ConfigLoader {
             }),
         );
 
-        for (let { key, value } of values) {
+        for (const { key, value } of values) {
             config[key] = value;
         }
     }
@@ -42,7 +42,7 @@ export class ConfigLoader {
 
         const traverseAndFill = async (config1: any, nestedKeys1: string[]) => {
             if (!config1) return;
-            for (let nestedKey of nestedKeys1) {
+            for (const nestedKey of nestedKeys1) {
                 const ctor = Reflect.getMetadata('design:type', config1, nestedKey);
                 config1[nestedKey] = new ctor();
 
@@ -58,7 +58,7 @@ export class ConfigLoader {
 
                     return providerKeys.indexOf(providerNameA) - providerKeys.indexOf(providerNameB);
                 });
-                for (let { key, value } of keyValues) {
+                for (const { key, value } of keyValues) {
                     config1[nestedKey][key] = value;
                 }
 

@@ -18,6 +18,7 @@ export class VaultStubConfigProvider implements Provider {
         await new Promise(resolve => setTimeout(resolve, 50));
 
         const map = {
+            // eslint-disable-next-line @typescript-eslint/camelcase
             crypto_key: 'RkdYksbuOxTmo8jveowE',
         };
 
