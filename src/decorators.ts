@@ -3,7 +3,7 @@ import { ProvidersMap } from './config.loader';
 
 type Options = {
     key: string;
-    default?: string | number;
+    default?: string | number | boolean;
 };
 
 export function EnvConfig(options: Options) {

@@ -5,5 +5,5 @@ export class Config {
     cryptoKey: string;
 
     @VaultConfig({ key: 'googleKmsPrivateKey', default: 'invalid_key_you_should_not_use_defaults_in_sensitive_data' })
-    googleKmsPrivateKey: number;
+    googleKmsPrivateKey: string;
 }

@@ -31,6 +31,8 @@ export class VaultStubConfigProvider implements Provider {
         const defaults = {
             // eslint-disable-next-line @typescript-eslint/camelcase
             crypto_key: 'RkdYksbuOxTmo8jveowE',
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            google_kms_private_key: 'fsd77fdsa7dfhkfadsfhasdjasdf88fdsajfds',
         };
 
         const map = this.options.knownValues || defaults;

@@ -14,6 +14,23 @@ type Options = {
     };
 };
 
+type BuiltInTypes = 'String' | 'Number' | 'Boolean';
+
+const tryToConvertToCorrectType = (target:any, key:string, value: string) => {
+    const type: BuiltInTypes = Reflect.getMetadata('design:type', target, key).name;
+
+    switch (type) {
+        case 'String':
+            return String(value);
+        case 'Number':
+            return Number(value);
+        case 'Boolean':
+            return Boolean(value);
+        default:
+            return value;
+    }
+};
+
 export class ConfigLoader {
     static async load(options: Options) {
         await Promise.all([ConfigLoader.fillInFlatten(options), ConfigLoader.fillInNested(options)]);
@@ -32,7 +49,7 @@ export class ConfigLoader {
         );
 
         for (const { key, value } of values) {
-            config[key] = value;
+            config[key] = tryToConvertToCorrectType(config, key, value);
         }
     }
 
@@ -59,7 +76,7 @@ export class ConfigLoader {
                     return providerKeys.indexOf(providerNameA) - providerKeys.indexOf(providerNameB);
                 });
                 for (const { key, value } of keyValues) {
-                    config1[nestedKey][key] = value;
+                    config1[nestedKey][key] = tryToConvertToCorrectType(config1[nestedKey], key, value);
                 }
 
                 if (oneMoreNested && oneMoreNested.length > 0) {

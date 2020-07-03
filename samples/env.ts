@@ -6,4 +6,7 @@ export class Config {
 
     @EnvConfig({ key: 'LOG_LEVEL', default: 'debug' })
     logLevel: string;
+
+    @EnvConfig({ key: 'PORT', default: 80 })
+    port: number;
 }

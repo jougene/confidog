@@ -1,7 +1,4 @@
-import * as util from 'util';
-import { ConfigLoader } from '../src/config.loader';
 import { EnvConfig, NestedConfig } from '../src/decorators';
-import { EnvConfigProvider } from '../src/providers';
 
 class InnerInnerInnerConfig {
     @EnvConfig({ key: 'KEY_1', default: 'VALUE_1' })
@@ -21,16 +18,7 @@ class InnerConfig {
     innerInner: InnerInnerConfig;
 }
 
-class Config {
+export class Config {
     @NestedConfig()
     inner: InnerConfig;
 }
-
-const config = ConfigLoader.load({
-    config: new Config(),
-    providers: {
-        env: new EnvConfigProvider(),
-    },
-});
-
-config.then(c => console.log(util.inspect(c, true, null)));
