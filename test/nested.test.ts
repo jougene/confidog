@@ -18,7 +18,7 @@ describe('nested', () => {
     it('use defaults', async () => {
         const config = await load();
         const expectedConfig = {
-            inner: { innerInner: { innerInnerInner: { key1: 'VALUE_1', key2: NaN } } },
+            inner: { innerInner: { innerInnerInner: { key1: 'VALUE_1', key2: undefined } } },
         };
 
         assert.deepEqual(config, expectedConfig);

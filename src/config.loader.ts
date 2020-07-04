@@ -16,16 +16,16 @@ type Options = {
 
 type BuiltInTypes = 'String' | 'Number' | 'Boolean';
 
-const tryToConvertToCorrectType = (target:any, key:string, value: string) => {
+const tryToConvertToCorrectType = (target: any, key: string, value: string) => {
     const type: BuiltInTypes = Reflect.getMetadata('design:type', target, key).name;
 
     switch (type) {
         case 'String':
-            return String(value);
+            return value ? String(value) : value;
         case 'Number':
-            return Number(value);
+            return value ? Number(value) : value;
         case 'Boolean':
-            return Boolean(value);
+            return value ? Boolean(value) : value;
         default:
             return value;
     }
