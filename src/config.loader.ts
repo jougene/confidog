@@ -19,19 +19,28 @@ type BuiltInTypes = 'String' | 'Number' | 'Boolean';
 const tryToConvertToCorrectType = (target: any, key: string, value: string) => {
     const type: BuiltInTypes = Reflect.getMetadata('design:type', target, key).name;
 
+    const possibleTrue = ['true', 'TRUE', '1', true];
+    const possibleFalse = ['false', 'FALSE', '0', false];
+
     switch (type) {
         case 'String':
             return value ? String(value) : value;
         case 'Number':
             return value ? Number(value) : value;
         case 'Boolean':
-            return value ? Boolean(value) : value;
+            if (possibleTrue.includes(value)) return true;
+            if (possibleFalse.includes(value)) return false;
+            return undefined;
         default:
             return value;
     }
 };
 
 export class ConfigLoader {
+    //static async load1<T>(config: T, options: any): Promise<T> {
+    //console.log(config, options);
+
+    //}
     static async load(options: Options) {
         await Promise.all([ConfigLoader.fillInFlatten(options), ConfigLoader.fillInNested(options)]);
 

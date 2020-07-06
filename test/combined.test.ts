@@ -35,7 +35,6 @@ describe('combined', () => {
         assert.deepEqual(config, expected);
     });
 
-    // TODO enable it after add transform functions for correct types
     it('load with all values provided', async () => {
         process.env = {
             ENV: 'production',
@@ -49,7 +48,7 @@ describe('combined', () => {
             MAIL_PORT: '11025',
             MAIL_USER: 'kozma_ivanovich',
             MAIL_PASSWORD: '42',
-            MAIL_SECURE: 'TRUE',
+            MAIL_SECURE: 'true',
         };
         const config = await load();
 
@@ -64,4 +63,3 @@ describe('combined', () => {
         assert.deepEqual(config, expected);
     });
 });
-

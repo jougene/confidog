@@ -9,4 +9,7 @@ export class Config {
 
     @EnvConfig({ key: 'PORT', default: 80 })
     port: number;
+
+    @EnvConfig({ key: 'DEV_MODE', default: false })
+    devMode: boolean;
 }
