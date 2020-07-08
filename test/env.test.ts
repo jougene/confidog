@@ -3,7 +3,8 @@ import { Config } from '../samples/env';
 import { EnvConfigProvider, ConfigLoader } from '../src';
 
 describe('environment variables', () => {
-    const providers = { env: new EnvConfigProvider() };
+    const providers = [{ key: 'env', value: new EnvConfigProvider() }];
+
     const load = async () => {
         return ConfigLoader.load({
             config: new Config(),

@@ -1,13 +1,15 @@
 import { Provider } from './providers/provider.interface';
+import { cast } from './typecaster';
 
-export type ProvidersMap = { [key: string]: Provider };
+export type ProvidersArray = { key: string; value: Provider }[];
+export type ProvidersMap = Map<string, Provider>;
 
 type Values = { provider: string; key: string; value: string };
 type GrabberFn = (providers: ProvidersMap) => Values;
 
 type Options = {
     config: any;
-    providers: ProvidersMap;
+    providers: ProvidersArray;
     options?: {
         remoteConfigFetchTimeout?: number;
         override?: boolean;
@@ -19,21 +21,7 @@ type BuiltInTypes = 'String' | 'Number' | 'Boolean';
 const tryToConvertToCorrectType = (target: any, key: string, value: string) => {
     const type: BuiltInTypes = Reflect.getMetadata('design:type', target, key).name;
 
-    const possibleTrue = ['true', 'TRUE', '1', true];
-    const possibleFalse = ['false', 'FALSE', '0', false];
-
-    switch (type) {
-        case 'String':
-            return value ? String(value) : value;
-        case 'Number':
-            return value ? Number(value) : value;
-        case 'Boolean':
-            if (possibleTrue.includes(value)) return true;
-            if (possibleFalse.includes(value)) return false;
-            return undefined;
-        default:
-            return value;
-    }
+    return cast(type, value);
 };
 
 export class ConfigLoader {
@@ -42,13 +30,21 @@ export class ConfigLoader {
 
     //}
     static async load(options: Options) {
-        await Promise.all([ConfigLoader.fillInFlatten(options), ConfigLoader.fillInNested(options)]);
+        const providersMap: ProvidersMap = new Map<string, Provider>();
+
+        for (const { key, value } of options.providers) {
+            providersMap.set(key, value);
+        }
+
+        await Promise.all([
+            ConfigLoader.fillInFlatten(options.config, providersMap),
+            ConfigLoader.fillInNested(options.config, providersMap),
+        ]);
 
         return options.config; // CAREFUL - it mutates inner property of parameter
     }
 
-    private static async fillInFlatten(options: Options) {
-        const { config, providers } = options;
+    private static async fillInFlatten(config: any, providers: ProvidersMap) {
         const flattenGrabbers: GrabberFn[] = Reflect.getMetadata('grabbers', config) || [];
 
         const values: Values[] = await Promise.all(
@@ -62,8 +58,7 @@ export class ConfigLoader {
         }
     }
 
-    private static async fillInNested(options: Options) {
-        const { config, providers } = options;
+    private static async fillInNested(config: any, providers: ProvidersMap) {
         const nestedKeys = Reflect.getMetadata('nestedKeys', config) || [];
 
         const traverseAndFill = async (config1: any, nestedKeys1: string[]) => {
@@ -76,7 +71,7 @@ export class ConfigLoader {
                 const grabbers: GrabberFn[] = Reflect.getMetadata('grabbers', config1, nestedKey) || [];
                 const keyValues: Values[] = await Promise.all(grabbers.map(g => g(providers)));
 
-                const providerKeys = Object.keys(providers);
+                const providerKeys = [...providers.keys()]
 
                 keyValues.sort((a, b) => {
                     const providerNameA = a.provider;

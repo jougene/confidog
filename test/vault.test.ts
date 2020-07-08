@@ -23,9 +23,12 @@ describe('vault', () => {
     const load = async (provider: Provider) => {
         return ConfigLoader.load({
             config: new Config(),
-            providers: {
-                vault: provider,
-            },
+            providers: [
+                {
+                    key: 'vault',
+                    value: provider,
+                },
+            ],
         });
     };
     it('load defaults if there is no values in vault', async () => {

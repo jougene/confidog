@@ -3,13 +3,17 @@ import { Config } from '../samples/combined';
 import { EnvConfigProvider, ConfigLoader, VaultStubConfigProvider } from '../src';
 
 describe('combined', () => {
-    const providers = {
-        env: new EnvConfigProvider(),
-        vault: new VaultStubConfigProvider({
-            path: 'localhost',
-            secret: 'vault_secret',
-        }),
-    };
+    const providers = [
+        { key: 'env', value: new EnvConfigProvider() },
+        {
+            key: 'vault',
+            value: new VaultStubConfigProvider({
+                path: 'localhost',
+                secret: 'vault_secret',
+            }),
+        },
+    ];
+
     const load = async () => {
         return ConfigLoader.load({
             config: new Config(),

@@ -11,7 +11,7 @@ export function EnvConfig(options: Options) {
         const existedGrabbers = Reflect.getMetadata('grabbers', target) || [];
 
         const grabFn = async (providers: ProvidersMap) => {
-            const provider = providers['env'];
+            const provider = providers.get('env');
 
             const value = (await provider.get(options.key)) || options.default;
 
@@ -29,7 +29,7 @@ export function VaultConfig(options: Options) {
         const existedGrabbers = Reflect.getMetadata('grabbers', target) || [];
 
         const grabFn = async (providers: ProvidersMap) => {
-            const provider = providers['vault'];
+            const provider = providers.get('vault');
 
             const value = (await provider.get(options.key)) || options.default;
 

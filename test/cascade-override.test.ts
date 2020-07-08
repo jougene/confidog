@@ -11,7 +11,11 @@ const vaultProvider = new VaultStubConfigProvider({
 });
 
 describe('cascade', () => {
-    const providers = { env: new EnvConfigProvider(), vault: vaultProvider };
+    const providers = [
+        { key: 'env', value: new EnvConfigProvider() },
+        { key: 'vault', value: vaultProvider },
+    ];
+
     const load = async () => {
         return ConfigLoader.load({
             config: new Config(),
@@ -30,4 +34,3 @@ describe('cascade', () => {
         assert.deepEqual(config, { crypto: { cryptoKey: 'secret_value_1' } });
     });
 });
-

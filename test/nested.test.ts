@@ -3,7 +3,7 @@ import { Config } from '../samples/very-nested';
 import { EnvConfigProvider, ConfigLoader } from '../src';
 
 describe('nested', () => {
-    const providers = { env: new EnvConfigProvider() };
+    const providers = [{ key: 'env', value: new EnvConfigProvider() }];
     const load = async () => {
         return ConfigLoader.load({
             config: new Config(),
