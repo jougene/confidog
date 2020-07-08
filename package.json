@@ -1,15 +1,20 @@
 {
   "name": "confidog",
   "version": "0.3.1",
-  "description": "",
+  "description": "Cascade config loader for typescript from different config providers",
   "author": "Eugene Sinitsyn",
   "keywords": [
     "config",
+    "configuration",
     "typescript"
   ],
   "license": "ISC",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jougene/confidog"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "lint": "eslint \"{src,samples,test}/**/*.ts\"",
