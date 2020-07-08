@@ -5,10 +5,7 @@ import { EnvConfigProvider, ConfigLoader } from '../src';
 describe('nested', () => {
     const providers = [{ key: 'env', value: new EnvConfigProvider() }];
     const load = async () => {
-        return ConfigLoader.load({
-            config: new Config(),
-            providers,
-        });
+        return ConfigLoader.load(new Config(), { providers });
     };
 
     beforeEach(() => {

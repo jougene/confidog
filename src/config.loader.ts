@@ -8,7 +8,6 @@ type Values = { provider: string; key: string; value: string };
 type GrabberFn = (providers: ProvidersMap) => Values;
 
 type Options = {
-    config: any;
     providers: ProvidersArray;
     options?: {
         remoteConfigFetchTimeout?: number;
@@ -25,23 +24,16 @@ const tryToConvertToCorrectType = (target: any, key: string, value: string) => {
 };
 
 export class ConfigLoader {
-    //static async load1<T>(config: T, options: any): Promise<T> {
-    //console.log(config, options);
-
-    //}
-    static async load(options: Options) {
+    static async load<T>(config: T, options: Options): Promise<T> {
         const providersMap: ProvidersMap = new Map<string, Provider>();
 
         for (const { key, value } of options.providers) {
             providersMap.set(key, value);
         }
 
-        await Promise.all([
-            ConfigLoader.fillInFlatten(options.config, providersMap),
-            ConfigLoader.fillInNested(options.config, providersMap),
-        ]);
+        await Promise.all([ConfigLoader.fillInFlatten(config, providersMap), ConfigLoader.fillInNested(config, providersMap)]);
 
-        return options.config; // CAREFUL - it mutates inner property of parameter
+        return config; // CAREFUL - mutation!
     }
 
     private static async fillInFlatten(config: any, providers: ProvidersMap) {
@@ -71,7 +63,7 @@ export class ConfigLoader {
                 const grabbers: GrabberFn[] = Reflect.getMetadata('grabbers', config1, nestedKey) || [];
                 const keyValues: Values[] = await Promise.all(grabbers.map(g => g(providers)));
 
-                const providerKeys = [...providers.keys()]
+                const providerKeys = [...providers.keys()];
 
                 keyValues.sort((a, b) => {
                     const providerNameA = a.provider;

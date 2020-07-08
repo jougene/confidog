@@ -15,10 +15,7 @@ describe('combined', () => {
     ];
 
     const load = async () => {
-        return ConfigLoader.load({
-            config: new Config(),
-            providers,
-        });
+        return ConfigLoader.load(new Config(), { providers, });
     };
 
     beforeEach(() => {

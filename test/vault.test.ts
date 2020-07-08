@@ -21,8 +21,7 @@ const providerWithAllKnownValues = new VaultStubConfigProvider({
 
 describe('vault', () => {
     const load = async (provider: Provider) => {
-        return ConfigLoader.load({
-            config: new Config(),
+        return ConfigLoader.load(new Config(), {
             providers: [
                 {
                     key: 'vault',

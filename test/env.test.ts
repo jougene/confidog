@@ -6,8 +6,7 @@ describe('environment variables', () => {
     const providers = [{ key: 'env', value: new EnvConfigProvider() }];
 
     const load = async () => {
-        return ConfigLoader.load({
-            config: new Config(),
+        return ConfigLoader.load(new Config(), {
             providers,
         });
     };
