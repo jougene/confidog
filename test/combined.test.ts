@@ -15,7 +15,7 @@ describe('combined', () => {
     ];
 
     const load = async () => {
-        return ConfigLoader.load(new Config(), { providers, });
+        return ConfigLoader.load(new Config(), { providers });
     };
 
     beforeEach(() => {

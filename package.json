@@ -12,8 +12,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "lint": "eslint \"src/**/*.ts\"",
-    "lint:fix": "eslint \"{src}/**/*.ts\" --fix",
+    "lint": "eslint \"{src,samples,test}/**/*.ts\"",
+    "lint:fix": "eslint \"{src,samples,test}/**/*.ts\" --fix",
     "test": "jest"
   },
   "dependencies": {
