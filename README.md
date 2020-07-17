@@ -2,6 +2,8 @@
 
 Cascade config loader for typescript from different config providers
 
+Partially inspired by go library [confita](https://github.com/heetch/confita)
+
 ### Why?
 
 We want hierarchical config collected over different config providers
