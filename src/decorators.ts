@@ -3,7 +3,7 @@ import { ProvidersMap } from './config.loader';
 
 type Options = {
     key: string;
-    default?: string | number | boolean;
+    default?: string | number | boolean | Date;
 };
 
 export function EnvConfig(options: Options) {

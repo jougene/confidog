@@ -1,5 +1,7 @@
 import { Provider } from './providers/provider.interface';
-import { cast } from './typecaster';
+import { cast, BuiltInTypes } from './typecaster';
+import { validateOrReject } from 'class-validator';
+import { classToClass } from 'class-transformer';
 
 export type ProvidersArray = { key: string; value: Provider }[];
 export type ProvidersMap = Map<string, Provider>;
@@ -12,10 +14,15 @@ type Options = {
     options?: {
         remoteConfigFetchTimeout?: number;
         override?: boolean;
+        transform?: boolean;
+        validate?: boolean;
     };
 };
 
-type BuiltInTypes = 'String' | 'Number' | 'Boolean';
+const defaultOptions = {
+    transform: false,
+    validate: false,
+};
 
 const tryToConvertToCorrectType = (target: any, key: string, value: string) => {
     const type: BuiltInTypes = Reflect.getMetadata('design:type', target, key).name;
@@ -26,12 +33,23 @@ const tryToConvertToCorrectType = (target: any, key: string, value: string) => {
 export class ConfigLoader {
     static async load<T>(config: T, options: Options): Promise<T> {
         const providersMap: ProvidersMap = new Map<string, Provider>();
+        options.options = options.options || defaultOptions;
 
         for (const { key, value } of options.providers) {
             providersMap.set(key, value);
         }
 
         await Promise.all([ConfigLoader.fillInFlatten(config, providersMap), ConfigLoader.fillInNested(config, providersMap)]);
+
+        const { validate, transform } = options.options;
+
+        if (transform) {
+            config = classToClass(config);
+        }
+
+        if (validate) {
+            await validateOrReject(config);
+        }
 
         return config; // CAREFUL - mutation!
     }

@@ -1,5 +1,5 @@
 import { EnvConfig } from '../src/decorators';
-import { IsEmail } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class Config {
     @EnvConfig({ key: 'APP_NAME', default: 'awesome_app' })
@@ -8,7 +8,7 @@ export class Config {
     @EnvConfig({ key: 'LOG_LEVEL', default: 'debug' })
     logLevel: string;
 
-    @EnvConfig({ key: 'MAIL_FROM', default: 'perviy_tost_za@localhost.com' })
-    @IsEmail()
-    mailFrom: string;
+    @EnvConfig({ key: 'HARDCODED_DATE', default: new Date('2020-01-01') })
+    @Transform(d => new Date(d))
+    someHardcodedDate: Date;
 }

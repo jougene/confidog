@@ -1,4 +1,4 @@
-type BuiltInTypes = 'String' | 'Number' | 'Boolean';
+export type BuiltInTypes = 'String' | 'Number' | 'Boolean' | 'Date';
 
 const possibleTrue = ['true', 'TRUE', '1', true];
 const possibleFalse = ['false', 'FALSE', '0', false];
