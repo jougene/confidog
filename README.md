@@ -130,3 +130,4 @@ const config = ConfigLoader.load(new Config(), [
 See `samples` directory. Also this samples are used in tests, so you can be sure that it is just working
 
 ### Usage with nestjs
+See `samples/nestjs` directory.
