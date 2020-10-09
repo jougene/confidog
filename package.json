@@ -1,6 +1,6 @@
 {
   "name": "confidog",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Cascade config loader for typescript from different config providers",
   "author": "Eugene Sinitsyn",
   "keywords": [
