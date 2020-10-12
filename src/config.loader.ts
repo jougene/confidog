@@ -16,12 +16,14 @@ type Options = {
         override?: boolean;
         transform?: boolean;
         validate?: boolean;
+        freeze?: boolean;
     };
 };
 
 const defaultOptions = {
     transform: false,
     validate: false,
+    freeze: true,
 };
 
 const tryToConvertToCorrectType = (target: any, key: string, value: string) => {
@@ -33,15 +35,15 @@ const tryToConvertToCorrectType = (target: any, key: string, value: string) => {
 export class ConfigLoader {
     static async load<T>(config: T, options: Options): Promise<T> {
         const providersMap: ProvidersMap = new Map<string, Provider>();
-        options.options = options.options || defaultOptions;
+        options.options = { ...defaultOptions, ...options.options };
 
         for (const { key, value } of options.providers) {
             providersMap.set(key, value);
         }
 
-        await Promise.all([ConfigLoader.fillInFlatten(config, providersMap), ConfigLoader.fillInNested(config, providersMap)]);
+        await Promise.all([this.fillInFlatten(config, providersMap), this.fillInNested(config, providersMap)]);
 
-        const { validate, transform } = options.options;
+        const { validate, transform, freeze } = options.options;
 
         if (transform) {
             config = classToClass(config);
@@ -49,6 +51,10 @@ export class ConfigLoader {
 
         if (validate) {
             await validateOrReject(config);
+        }
+
+        if (freeze) {
+            Object.freeze(config);
         }
 
         return config; // CAREFUL - mutation!

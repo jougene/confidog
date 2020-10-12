@@ -119,15 +119,62 @@ So in this example if there is a value in env and vault, the vault value (if exi
 ```typescript
 import { ConfigLoader, EnvConfigProvider, VaultConfigProvider } from 'confidog';
 
-const config = ConfigLoader.load(new Config(), [
-    { key: 'env', value: new EnvConfigProvider() },
-    { key: 'value', value: new VaultConfigProvider({ path: 'localhost:8200/kv/my', secret: 'some_vault_secret' }) },
-]);
+const config = ConfigLoader.load(new Config(), {
+    providers: [
+        { key: 'env', value: new EnvConfigProvider() },
+        { key: 'value', value: new VaultConfigProvider({ path: 'localhost:8200/kv/my', secret: 'some_vault_secret' }) },
+    ]
+});
 ```
+
+### Options
+#### Validate
+You can use class-validator decorators to validate loaded config via them
+For example you have following config
+
+```typescript
+import { IsString } from 'class-validator';
+
+export class Config {
+    @EnvConfig({ key: 'DEV_MODE', default: false })
+    devMode: boolean;
+
+    @EnvConfig({ key: 'LOG_LEVEL', default: 'debug' })
+    @IsString()
+    logLevel: string;
+}
+```
+You can specify option validate set to `true`
+
+```typescript
+import { ConfigLoader, EnvConfigProvider } from 'confidog';
+
+const config = ConfigLoader.load(new Config(), {
+    providers: [{ key: 'env', value: new EnvConfigProvider() }],
+    options: {
+        validate: true
+    }
+});
+```
+#### Transform
+#### Freeze
+If you want config to be immutable, set option freeze to `true`. It set to `true` by default
+
+```typescript
+import { ConfigLoader, EnvConfigProvider } from 'confidog';
+
+const config = ConfigLoader.load(new Config(), {
+    providers: [{ key: 'env', value: new EnvConfigProvider() }],
+    options: {
+        validate: true,
+        freeze: true,
+    }
+});
 
 ### Samples
 
 See `samples` directory. Also this samples are used in tests, so you can be sure that it is just working
 
 ### Usage with nestjs
+
 See `samples/nestjs` directory.
